@@ -1,0 +1,802 @@
+/* Timing and Waveform Generator Module of X Band Navigational Radar
+   Modern Full-Width Editorial Layout (No floating border boxes) */
+:root {
+  --bg: #ffffff;
+  --bg-alt: #f8fafc;
+  --surface-soft: #f1f5f9;
+  --ink: #0f172a;
+  --ink-secondary: #334155;
+  --muted: #64748b;
+  --line: #e2e8f0;
+  --line-strong: #cbd5e1;
+
+  --accent: #16803c;
+  --accent-hover: #11662f;
+  --accent-soft: #ecfdf3;
+
+  --green: #16803c;
+  --red: #dc2626;
+
+  --sans: "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background-color: var(--bg);
+  color: var(--ink);
+  font-family: var(--sans);
+  font-size: 15px;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+}
+
+.workbench {
+  inline-size: 100%;
+  min-block-size: 100dvh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ---------------- Full-Bleed Modern Dark Hero ---------------- */
+.hero-banner {
+  position: relative;
+  overflow: clip;
+  inline-size: 100%;
+  background: radial-gradient(circle at 80% 50%, #112233 0%, #090d16 70%);
+  color: #f8fafc;
+  padding-block: clamp(2.75rem, 5vw, 4.25rem);
+  padding-inline: clamp(1.75rem, 5vw, 5.5rem);
+}
+
+.radar-bg-canvas {
+  position: absolute;
+  inset-block-start: 50%;
+  inset-inline-end: 4%;
+  transform: translateY(-50%);
+  inline-size: min(460px, 42vw);
+  block-size: min(460px, 42vw);
+  opacity: 0.35;
+  pointer-events: none;
+}
+
+.hero-inner {
+  position: relative;
+  z-index: 1;
+  inline-size: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 2.25rem;
+}
+
+.hero-content {
+  max-inline-size: 48rem;
+}
+
+.hero-content h1 {
+  margin: 0;
+  font-size: clamp(1.85rem, 3.2vw, 2.75rem);
+  font-weight: 700;
+  line-height: 1.18;
+  letter-spacing: -0.025em;
+  color: #ffffff;
+}
+
+.hero-sub {
+  margin: 0.85rem 0 0;
+  font-size: 1.05rem;
+  color: #94a3b8;
+  max-inline-size: 58ch;
+}
+
+/* Open Spec Strip inside Hero (no floating boxes) */
+.hero-specs-strip {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1.5rem 2.5rem;
+  padding-block-start: 1.75rem;
+  border-block-start: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.spec-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.spec-label {
+  font-size: 0.78rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #94a3b8;
+}
+
+.spec-value {
+  font-size: 1.15rem;
+  font-weight: 600;
+  color: #ffffff;
+}
+
+.spec-value small {
+  font-weight: 400;
+  font-size: 0.88rem;
+  color: #cbd5e1;
+}
+
+/* ---------------- Full-Width Open Sections (No floating border boxes) ---------------- */
+.main-sections {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.section-band {
+  inline-size: 100%;
+  padding-block: 2.75rem;
+  padding-inline: clamp(1.75rem, 5vw, 5.5rem);
+  background: var(--bg);
+  border-block-end: 1px solid var(--line);
+}
+
+.section-band.alt-band {
+  background: var(--bg-alt);
+}
+
+.section-head {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  margin-block-end: 1.75rem;
+}
+
+.section-head h2 {
+  margin: 0;
+  font-size: 1.35rem;
+  font-weight: 700;
+  letter-spacing: -0.015em;
+  color: var(--ink);
+}
+
+/* Modern Tab Switcher */
+.mode-tabs {
+  display: inline-flex;
+  background: var(--surface-soft);
+  padding: 4px;
+  border-radius: 999px;
+}
+
+.mode-tab {
+  position: relative;
+  border: 0;
+  background: transparent;
+  padding: 7px 16px;
+  font-family: var(--sans);
+  font-size: 0.84rem;
+  font-weight: 600;
+  color: var(--muted);
+  border-radius: 999px;
+  cursor: pointer;
+  transition: color 0.15s, background-color 0.15s;
+}
+
+.mode-tab:hover {
+  color: var(--ink);
+}
+
+.mode-tab[aria-selected="true"] {
+  background: var(--bg);
+  color: var(--accent);
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.08);
+}
+
+/* Section 1 Split Layout: Form on Left, Reference Scenarios Table on Right */
+.recommender-split {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2.5rem;
+  align-items: start;
+}
+
+@media (min-width: 1024px) {
+  .recommender-split {
+    grid-template-columns: 1.05fr 0.95fr;
+  }
+}
+
+.recommender-form-col,
+.presets-pane {
+  min-inline-size: 0;
+}
+
+.grid {
+  display: grid;
+  gap: 1.15rem 1.25rem;
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 560px) {
+  .g2 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 780px) {
+  .g2 {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* Clickable Reference Scenarios Table */
+.scenarios-table tbody th {
+  inline-size: auto;
+  font-weight: 600;
+}
+
+.scenarios-table tbody td {
+  font-weight: 400;
+  color: var(--ink-secondary);
+}
+
+.scenarios-table tbody tr.preset-card {
+  cursor: pointer;
+  transition: background-color 0.12s;
+}
+
+.scenarios-table tbody tr.preset-card:hover {
+  background: var(--bg-alt);
+}
+
+.scenarios-table tbody tr.preset-card.is-active {
+  background: var(--accent-soft);
+}
+
+.scenarios-table tbody tr.preset-card.is-active th,
+.scenarios-table tbody tr.preset-card.is-active td {
+  color: var(--accent);
+}
+
+.td-action {
+  text-align: end !important;
+}
+
+.use-link {
+  border: 0;
+  background: transparent;
+  padding: 2px 8px;
+  font-family: var(--sans);
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--accent);
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.scenarios-table tbody tr.preset-card:hover .use-link,
+.scenarios-table tbody tr.preset-card.is-active .use-link {
+  background: rgba(22, 128, 60, 0.12);
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+label {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--ink-secondary);
+}
+
+.box {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-block-size: 44px;
+  padding-inline: 0.9rem;
+  background: var(--bg-alt);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  transition: border-color 0.15s, background-color 0.15s;
+}
+
+.alt-band .box {
+  background: var(--bg);
+}
+
+.box:focus-within {
+  background: var(--bg);
+  border-color: var(--accent);
+}
+
+.box.is-readonly {
+  background: var(--surface-soft);
+  border-color: transparent;
+}
+
+.box input, .box select {
+  flex: 1;
+  min-inline-size: 0;
+  inline-size: 100%;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  font-family: var(--sans);
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: var(--ink);
+  padding-block: 0.45rem;
+}
+
+.box input[readonly] {
+  color: var(--muted);
+}
+
+.box.big {
+  min-block-size: 50px;
+}
+
+.box.big input {
+  font-size: 1.15rem;
+  font-weight: 600;
+}
+
+.readonly-val {
+  font-size: 0.92rem;
+  font-weight: 500;
+  color: var(--muted);
+}
+
+.unit {
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+input[type=number] {
+  -moz-appearance: textfield;
+}
+input[type=number]::-webkit-outer-spin-button,
+input[type=number]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.box:has(input:is(:user-invalid, .user-invalid-fallback)),
+.box.invalid {
+  border-color: var(--red);
+  background: #fef2f2;
+}
+
+/* Buttons */
+.action-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1rem;
+  margin-block-start: 1.5rem;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-block-size: 44px;
+  padding-inline: 1.35rem;
+  font-family: var(--sans);
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--ink);
+  text-decoration: none;
+  background: var(--surface-soft);
+  border: 0;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: background-color 0.15s, color 0.15s;
+}
+
+.btn:hover {
+  background: var(--line);
+}
+
+.btn.primary {
+  background: var(--accent);
+  color: #ffffff;
+}
+
+.btn.primary:hover {
+  background: var(--accent-hover);
+}
+
+.btn:focus-visible,
+.mode-tab:focus-visible,
+.preset-card:focus-visible,
+.term-clear-btn:focus-visible,
+summary:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.btn:disabled, .btn.is-disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.btn.busy {
+  opacity: 0.7;
+  pointer-events: none;
+}
+
+.muted {
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+/* ML Result Banner */
+.result-banner {
+  margin-block-start: 1.5rem;
+  padding: 1.15rem 1.35rem;
+  background: var(--accent-soft);
+  border-radius: 10px;
+}
+
+.result-banner[hidden] {
+  display: none;
+}
+
+.result-banner.error {
+  background: #fef2f2;
+  color: var(--red);
+}
+
+.result-header {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 0.5rem;
+  font-size: 1rem;
+}
+
+.result-line {
+  margin: 0.3rem 0 0;
+  font-size: 0.88rem;
+  color: var(--ink-secondary);
+}
+
+.proba-list {
+  margin-block-start: 0.75rem;
+  padding-block-start: 0.65rem;
+  border-block-start: 1px solid rgba(22, 128, 60, 0.18);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.25rem;
+  font-size: 0.82rem;
+  color: var(--ink-secondary);
+}
+
+.warnings {
+  margin: 0.5rem 0 0;
+  padding-inline-start: 1.2rem;
+  font-size: 0.85rem;
+  color: var(--red);
+}
+
+.warnings:empty {
+  display: none;
+}
+
+/* ---------------- Section 2: Waveform Split Layout & Borderless Clean Table ---------------- */
+.waveform-split {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2.5rem;
+  align-items: start;
+}
+
+@media (min-width: 960px) {
+  .waveform-split {
+    grid-template-columns: 340px 1fr;
+  }
+}
+
+.waveform-inputs {
+  display: flex;
+  flex-direction: column;
+  gap: 1.15rem;
+}
+
+.table-wrap {
+  overflow-x: auto;
+  max-inline-size: 100%;
+}
+
+/* Borderless Horizontal-Divider Table (no grid box cages) */
+.clean-table {
+  inline-size: 100%;
+  border-collapse: collapse;
+  font-size: 0.92rem;
+}
+
+.clean-table th,
+.clean-table td {
+  padding: 0.75rem 0.5rem;
+  border-block-end: 1px solid var(--line);
+  text-align: start;
+  vertical-align: baseline;
+}
+
+.clean-table thead th {
+  font-size: 0.76rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--muted);
+  padding-block-start: 0;
+}
+
+.clean-table tbody th {
+  font-weight: 500;
+  color: var(--ink);
+  inline-size: 62%;
+}
+
+.scenarios-table th,
+.scenarios-table td {
+  inline-size: auto;
+  white-space: nowrap;
+  padding: 0.65rem 0.5rem;
+}
+
+.scenarios-table tbody th {
+  inline-size: auto;
+  font-weight: 600;
+}
+
+.clean-table tbody td {
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.formula {
+  font-weight: 400;
+  font-size: 0.8rem;
+  color: var(--muted);
+  margin-inline-start: 0.35rem;
+}
+
+/* ---------------- Section 3: Simulation Controls & Split Workbench ---------------- */
+.sim-controls-row {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.25rem;
+  align-items: end;
+}
+
+@media (min-width: 900px) {
+  .sim-controls-row {
+    grid-template-columns: 180px 180px 220px 1fr;
+  }
+}
+
+.sim-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+}
+
+.sim-options-bar {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  margin-block-start: 1.25rem;
+}
+
+.checks {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem 1.75rem;
+}
+
+.checks label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 500;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+
+input[type=checkbox] {
+  inline-size: 16px;
+  block-size: 16px;
+  accent-color: var(--accent);
+}
+
+.cfg {
+  font-size: 0.85rem;
+}
+
+.cfg summary {
+  cursor: pointer;
+  color: var(--muted);
+  font-weight: 500;
+}
+
+.cfg-row {
+  display: grid;
+  grid-template-columns: minmax(220px, 1fr) auto;
+  gap: 0.6rem;
+  margin-block-start: 0.6rem;
+}
+
+/* Side-by-Side Terminal (Left) and Open Results Table (Right) */
+.workbench-split {
+  margin-block-start: 2rem;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2.25rem;
+  align-items: start;
+}
+
+@media (min-width: 960px) {
+  .workbench-split {
+    grid-template-columns: 1.05fr 0.95fr;
+  }
+}
+
+/* Left: macOS-Style Terminal */
+.term-window {
+  border-radius: 10px;
+  overflow: clip;
+  background: #111318;
+  min-inline-size: 0;
+}
+
+.term-titlebar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.6rem 0.9rem;
+  background: #1b1f27;
+  font-size: 0.8rem;
+  color: #cbd5e1;
+}
+
+.mac-dots {
+  display: inline-flex;
+  gap: 6px;
+}
+
+.mac-dot {
+  inline-size: 11px;
+  block-size: 11px;
+  border-radius: 50%;
+}
+.mac-dot.red { background: #ff5f56; }
+.mac-dot.yellow { background: #ffbd2e; }
+.mac-dot.green { background: #27c93f; }
+
+.term-title {
+  font-weight: 600;
+}
+
+.term-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 0.76rem;
+  color: #94a3b8;
+}
+
+.term-clear-btn {
+  padding: 2px 9px;
+  font-family: var(--sans);
+  font-size: 0.74rem;
+  background: rgba(255, 255, 255, 0.08);
+  color: #e2e8f0;
+  border: 0;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.term-clear-btn:hover {
+  background: rgba(255, 255, 255, 0.16);
+}
+
+.screen {
+  block-size: 330px;
+  overflow-y: auto;
+  scrollbar-gutter: stable;
+  overscroll-behavior: contain;
+  padding: 0.9rem 1.1rem;
+  font-family: var(--mono);
+  font-size: 0.8rem;
+  line-height: 1.6;
+  color: #e2e8f0;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.ln { display: block; }
+.ln.sys { color: #94a3b8; }
+.ln.ok { color: #4ade80; }
+.ln.err { color: #f87171; }
+.ln.warn { color: #fbbf24; }
+.ln.cmd { color: #ffffff; }
+
+/* Right: Open Testbench Results Table (no outer floating box) */
+.results-pane {
+  min-inline-size: 0;
+}
+
+.results-head {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 0.5rem;
+  margin-block-end: 1rem;
+}
+
+.results-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.results-summary {
+  margin: 0;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--muted);
+}
+
+.results-summary.pass {
+  color: var(--green);
+}
+
+.results-summary.fail {
+  color: var(--red);
+}
+
+.results-table tbody th {
+  inline-size: 46%;
+}
+
+.status-pass {
+  color: var(--green);
+  font-weight: 700;
+}
+
+.status-fail {
+  color: var(--red);
+  font-weight: 700;
+}
+
+.status-wait {
+  color: var(--muted);
+}
+
+/* Footer */
+.foot {
+  padding-block: 1.5rem;
+  padding-inline: clamp(1.75rem, 5vw, 5.5rem);
+  background: var(--bg-alt);
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 0.5rem;
+  font-size: 0.82rem;
+  color: var(--muted);
+}

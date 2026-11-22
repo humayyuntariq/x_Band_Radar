@@ -1,0 +1,63 @@
+Source of pulse width: PW measured from MyHDL timing simulation
+
+Mode 1   PW = 80 ns   N = 7528 samples   FFT bin spacing = 5.61 kHz
+Quantity                      Theory     Simulated      Difference
+Pulse width (ns)                80.0          80.0         +0.0 ns
+Carrier centre (GHz)        9.410000      9.410002        +2.2 kHz
+Lower first null (GHz)      9.397500      9.397500        +0.2 kHz
+Upper first null (GHz)      9.422500      9.422499        -1.4 kHz
+Lower null offset (MHz)      -12.5000      -12.4998     +0.0002 MHz
+Upper null offset (MHz)       12.5000       12.4986     -0.0014 MHz
+Main-lobe width (B) (MHz)       25.0000       24.9984     -0.0016 MHz
+Peak sidelobe (dB)            -13.26        -13.26        -0.00 dB
+Percentage error (%)               0         0.006
+
+Mode 2   PW = 800 ns   N = 75280 samples   FFT bin spacing = 5.61 kHz
+Quantity                      Theory     Simulated      Difference
+Pulse width (ns)               800.0         800.0         +0.0 ns
+Carrier centre (GHz)        9.410000      9.410002        +2.2 kHz
+Lower first null (GHz)      9.408750      9.408751        +1.5 kHz
+Upper first null (GHz)      9.411250      9.411247        -2.6 kHz
+Lower null offset (MHz)       -1.2500       -1.2485     +0.0015 MHz
+Upper null offset (MHz)        1.2500        1.2474     -0.0026 MHz
+Main-lobe width (B) (MHz)        2.5000        2.4959     -0.0041 MHz
+Peak sidelobe (dB)            -13.26        -13.26        -0.00 dB
+Percentage error (%)               0         0.163
+
+Mode 3   PW = 200 ns   N = 18820 samples   FFT bin spacing = 5.61 kHz
+Quantity                      Theory     Simulated      Difference
+Pulse width (ns)               200.0         200.0         +0.0 ns
+Carrier centre (GHz)        9.410000      9.410002        +2.2 kHz
+Lower first null (GHz)      9.405000      9.404999        -0.8 kHz
+Upper first null (GHz)      9.415000      9.415000        -0.3 kHz
+Lower null offset (MHz)       -5.0000       -5.0008     -0.0008 MHz
+Upper null offset (MHz)        5.0000        4.9997     -0.0003 MHz
+Main-lobe width (B) (MHz)       10.0000       10.0005     +0.0005 MHz
+Peak sidelobe (dB)            -13.26        -13.26        +0.00 dB
+Percentage error (%)               0         0.005
+
+Mode 4   PW = 400 ns   N = 37640 samples   FFT bin spacing = 5.61 kHz
+Quantity                      Theory     Simulated      Difference
+Pulse width (ns)               400.0         400.0         +0.0 ns
+Carrier centre (GHz)        9.410000      9.410002        +2.2 kHz
+Lower first null (GHz)      9.407500      9.407501        +0.7 kHz
+Upper first null (GHz)      9.412500      9.412498        -1.8 kHz
+Lower null offset (MHz)       -2.5000       -2.4993     +0.0007 MHz
+Upper null offset (MHz)        2.5000        2.4982     -0.0018 MHz
+Main-lobe width (B) (MHz)        5.0000        4.9974     -0.0026 MHz
+Peak sidelobe (dB)            -13.26        -13.26        -0.00 dB
+Percentage error (%)               0         0.051
+
+Mode 5   PW = 600 ns   N = 56460 samples   FFT bin spacing = 5.61 kHz
+Quantity                      Theory     Simulated      Difference
+Pulse width (ns)               600.0         600.0         +0.0 ns
+Carrier centre (GHz)        9.410000      9.410002        +2.2 kHz
+Lower first null (GHz)      9.408333      9.408331        -2.5 kHz
+Upper first null (GHz)      9.411667      9.411668        +1.4 kHz
+Lower null offset (MHz)       -1.6667       -1.6692     -0.0025 MHz
+Upper null offset (MHz)        1.6667        1.6681     +0.0014 MHz
+Main-lobe width (B) (MHz)        3.3333        3.3372     +0.0039 MHz
+Peak sidelobe (dB)            -13.26        -13.26        -0.00 dB
+Percentage error (%)               0         0.117
+
+Mode 1 / Mode 2 main-lobe width ratio: theory 10.000, simulated 10.016

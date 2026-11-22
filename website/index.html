@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Timing and Waveform Generator Module of X Band Navigational Radar</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/console.css">
+</head>
+<body>
+<div class="workbench">
+
+  <!-- Full-Bleed Dark Hero with Integrated Background Radar Sweep & All 4 System Specs -->
+  <section class="hero-banner" aria-label="Project overview">
+    <canvas id="radar-bg" class="radar-bg-canvas" width="560" height="560" aria-hidden="true"></canvas>
+
+    <div class="hero-inner">
+      <div class="hero-content">
+        <h1>Timing and Waveform Generator Module of X Band Navigational Radar</h1>
+        <p class="hero-sub">
+          Intelligent pulse mode selection, real-time waveform parameter derivation, and cycle-accurate HDL timing verification.
+        </p>
+      </div>
+
+      <div class="hero-specs-strip" aria-label="Radar system specifications">
+        <div class="spec-item">
+          <span class="spec-label">Master Clock</span>
+          <strong class="spec-value">100 MHz <small>(10 ns)</small></strong>
+        </div>
+        <div class="spec-item">
+          <span class="spec-label">Carrier Frequency</span>
+          <strong class="spec-value">9.41 GHz <small>(X-Band)</small></strong>
+        </div>
+        <div class="spec-item">
+          <span class="spec-label">Peak Power &amp; Gain</span>
+          <strong class="spec-value">10.0 kW <small>/ 30 dBi</small></strong>
+        </div>
+        <div class="spec-item">
+          <span class="spec-label">Antenna Rotation &amp; Dwell</span>
+          <strong class="spec-value">24.0 RPM <small>/ 1.2&deg; BW / 8.33 ms</small></strong>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <main class="main-sections">
+
+    <!-- 1. ML Mode Recommender (Full-Width Open Section) -->
+    <section class="section-band" aria-labelledby="h-mission">
+      <div class="section-head">
+        <h2 id="h-mission">1. ML Mode Recommender</h2>
+        <div class="mode-tabs" role="tablist" aria-label="Range and resolution input mode">
+          <button type="button" role="tab" class="mode-tab" id="tab-range-mode" aria-selected="true">Enter Max Range</button>
+          <button type="button" role="tab" class="mode-tab" id="tab-res-mode" aria-selected="false">Enter Range Resolution</button>
+        </div>
+      </div>
+
+      <div class="recommender-split">
+        <!-- Left: Mission Inputs Form & Recommendation Result -->
+        <div class="recommender-form-col">
+          <form id="ml-form" aria-labelledby="h-mission" novalidate>
+            <div class="grid g2">
+              <div class="field" id="field-range">
+                <label for="in-range">Maximum Range</label>
+                <div class="box" id="box-range">
+                  <input id="in-range" name="range_km" type="number" inputmode="decimal" min="0.5" max="250" step="any" value="{{ d.range_km }}" required>
+                  <span class="unit">km</span>
+                </div>
+              </div>
+
+              <div class="field" id="field-res">
+                <label for="in-res">Range Resolution (&Delta;R)</label>
+                <div class="box is-readonly" id="box-res">
+                  <input id="in-res" name="resolution_m" type="number" inputmode="decimal" min="12" max="500" step="any" value="{{ d.resolution_m }}" readonly required>
+                  <span class="unit">m</span>
+                </div>
+              </div>
+
+              <div class="field">
+                <label for="in-minrange">Minimum Target Range</label>
+                <div class="box">
+                  <input id="in-minrange" name="min_range_m" type="number" inputmode="decimal" min="15" max="10000" step="any" value="{{ d.min_range_m }}" required>
+                  <span class="unit">m</span>
+                </div>
+              </div>
+
+              <div class="field">
+                <label for="in-rcs">Target RCS Area</label>
+                <div class="box">
+                  <input id="in-rcs" name="rcs_m2" type="number" inputmode="decimal" min="0.1" max="50000" step="any" value="{{ d.rcs_m2 }}" required>
+                  <span class="unit">m&sup2;</span>
+                </div>
+              </div>
+
+              <div class="field">
+                <label for="in-sea">Sea State (Douglas Scale)</label>
+                <div class="box">
+                  <select id="in-sea" name="sea_state">
+                    <option value="0">0: Calm (Glassy)</option>
+                    <option value="1">1: Calm (Rippled)</option>
+                    <option value="2" selected>2: Smooth</option>
+                    <option value="3">3: Slight</option>
+                    <option value="4">4: Moderate</option>
+                    <option value="5">5: Rough</option>
+                    <option value="6">6: Very Rough</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="field">
+                <label for="in-rain">Rain Rate</label>
+                <div class="box">
+                  <input id="in-rain" name="rain_mmh" type="number" inputmode="decimal" min="0" max="200" step="any" value="{{ d.rain_mmh }}" required>
+                  <span class="unit">mm/h</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="action-bar">
+              <button type="submit" class="btn primary" id="btn-ai">Recommend Mode</button>
+              <span class="muted" id="ai-note"></span>
+            </div>
+          </form>
+
+          <div class="result-banner" id="ai-result" hidden>
+            <div class="result-header">
+              <strong><span id="r-mode"></span> (<span id="r-code"></span>)</strong>
+              <span>Confidence: <strong id="r-conf">-</strong></span>
+            </div>
+            <p class="result-line" id="r-line"></p>
+            <div class="proba-list" id="r-proba"></div>
+            <ul class="warnings" id="r-warn"></ul>
+          </div>
+        </div>
+
+        <!-- Right: Reference Test Cases Table (Mode 1 to Mode 5) -->
+        <div class="presets-pane" aria-label="Model test cases for Mode 1 to Mode 5">
+          <div class="results-head">
+            <span class="results-title">Reference Test Scenarios</span>
+            <span class="muted">Click any scenario to load and evaluate</span>
+          </div>
+          <div class="table-wrap" role="region" aria-label="Reference test scenarios" tabindex="0">
+            <table class="clean-table scenarios-table">
+              <thead>
+                <tr>
+                  <th scope="col">Scenario</th>
+                  <th scope="col">Range</th>
+                  <th scope="col">&Delta;R</th>
+                  <th scope="col">Min</th>
+                  <th scope="col">RCS</th>
+                  <th scope="col">Sea</th>
+                  <th scope="col">Mode</th>
+                  <th scope="col"></th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr class="preset-card" data-preset="1">
+                  <th scope="row">1. Harbour Docking</th>
+                  <td>15 km</td>
+                  <td>15 m</td>
+                  <td>25 m</td>
+                  <td>50 m&sup2;</td>
+                  <td>1</td>
+                  <td>Mode 1 (000)</td>
+                  <td class="td-action"><button type="button" class="use-link">Load</button></td>
+                </tr>
+                <tr class="preset-card" data-preset="2">
+                  <th scope="row">2. Deep Offshore</th>
+                  <td>200 km</td>
+                  <td>130 m</td>
+                  <td>150 m</td>
+                  <td>500 m&sup2;</td>
+                  <td>2</td>
+                  <td>Mode 2 (001)</td>
+                  <td class="td-action"><button type="button" class="use-link">Load</button></td>
+                </tr>
+                <tr class="preset-card" data-preset="3">
+                  <th scope="row">3. Coastal Fairway</th>
+                  <td>30 km</td>
+                  <td>35 m</td>
+                  <td>50 m</td>
+                  <td>50 m&sup2;</td>
+                  <td>2</td>
+                  <td>Mode 3 (010)</td>
+                  <td class="td-action"><button type="button" class="use-link">Load</button></td>
+                </tr>
+                <tr class="preset-card" data-preset="4">
+                  <th scope="row">4. Regional Approach</th>
+                  <td>45 km</td>
+                  <td>65 m</td>
+                  <td>80 m</td>
+                  <td>100 m&sup2;</td>
+                  <td>2</td>
+                  <td>Mode 4 (011)</td>
+                  <td class="td-action"><button type="button" class="use-link">Load</button></td>
+                </tr>
+                <tr class="preset-card" data-preset="5">
+                  <th scope="row">5. Long-Range Patrol</th>
+                  <td>160 km</td>
+                  <td>95 m</td>
+                  <td>110 m</td>
+                  <td>100 m&sup2;</td>
+                  <td>2</td>
+                  <td>Mode 5 (100)</td>
+                  <td class="td-action"><button type="button" class="use-link">Load</button></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 2. Waveform & Derived Parameters (Full-Width Open Section) -->
+    <section class="section-band alt-band" aria-labelledby="h-wave">
+      <div class="section-head">
+        <h2 id="h-wave">2. Waveform &amp; Derived Parameters</h2>
+      </div>
+
+      <div class="waveform-split">
+        <div class="waveform-inputs">
+          <div class="field">
+            <label for="pw">Pulse Width (PW)</label>
+            <div class="box big">
+              <input id="pw" name="pw_ns" type="number" inputmode="decimal" step="10" min="10" max="2000" value="{{ d.pw_ns }}" required>
+              <span class="unit">ns</span>
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="pri">Pulse Repetition Interval (PRI)</label>
+            <div class="box big">
+              <input id="pri" name="pri_us" type="number" inputmode="decimal" step="any" min="1" max="2000" value="{{ d.pri_us }}" required>
+              <span class="unit">&micro;s</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="table-wrap" role="region" aria-label="Derived waveform parameters" tabindex="0">
+          <table class="clean-table">
+            <thead>
+              <tr>
+                <th scope="col">Parameter</th>
+                <th scope="col">Value</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <th scope="row">Range Resolution (&Delta;R) <small class="formula">(c &times; PW / 2)</small></th>
+                <td><output id="d-dr">-</output> m</td>
+              </tr>
+              <tr>
+                <th scope="row">Blind Range <small class="formula">(c &times; (PW + Guard) / 2)</small></th>
+                <td><output id="d-blind">-</output> m</td>
+              </tr>
+              <tr>
+                <th scope="row">Max Unambiguous Range <small class="formula" id="d-rmax-nm">(c &times; PRI / 2)</small></th>
+                <td><output id="d-rmax">-</output> km</td>
+              </tr>
+              <tr>
+                <th scope="row">Pulse Repetition Frequency (PRF) <small class="formula">(1 / PRI)</small></th>
+                <td><output id="d-prf">-</output> Hz</td>
+              </tr>
+              <tr>
+                <th scope="row">Duty Cycle <small class="formula">((PW / PRI) &times; 100)</small></th>
+                <td><output id="d-duty">-</output> %</td>
+              </tr>
+              <tr>
+                <th scope="row">Hits per Beam <small class="formula">(PRF &times; 1.2&deg; / (6 &times; 24 rpm))</small></th>
+                <td><output id="d-hits">-</output> hits</td>
+              </tr>
+              <tr>
+                <th scope="row">Carrier Frequency <small class="formula">(Fixed X-Band)</small></th>
+                <td><output id="d-fc">9410.0</output> MHz (9.41 GHz)</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3. Simulation & Verification (Full-Width Open Section) -->
+    <section class="section-band" aria-labelledby="h-run">
+      <div class="section-head">
+        <h2 id="h-run">3. Simulation &amp; Verification</h2>
+      </div>
+
+      <form id="sim-form" aria-labelledby="h-run" novalidate>
+        <div class="sim-controls-row">
+          <div class="field">
+            <label for="pulses">Number of Pulses</label>
+            <div class="box">
+              <input id="pulses" name="pulses" type="number" min="1" max="10" step="1" value="{{ d.pulses }}" required>
+              <span class="unit">pulses</span>
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="guard">RX Guard Cycles</label>
+            <div class="box">
+              <input id="guard" name="guard_cycles" type="number" min="0" max="100" step="1" value="{{ d.guard_cycles }}" required>
+              <span class="unit">clk</span>
+            </div>
+          </div>
+
+          <div class="field">
+            <label>Carrier Frequency</label>
+            <div class="box is-readonly">
+              <span class="readonly-val">9410.0 MHz (9.41 GHz)</span>
+            </div>
+          </div>
+
+          <div class="sim-buttons">
+            <button type="submit" class="btn primary" id="btn-run">Run Testbench</button>
+            <a class="btn is-disabled" id="btn-dl" href="#" aria-disabled="true" tabindex="-1">Download VCD</a>
+            <button type="button" class="btn" id="btn-surfer" disabled>Open in Surfer</button>
+          </div>
+        </div>
+
+        <div class="sim-options-bar">
+          <div class="checks">
+            <label><input type="checkbox" id="t-download" checked> Download VCD when done</label>
+            <label><input type="checkbox" id="t-surfer" checked> Open in Surfer when done</label>
+          </div>
+
+          <details class="cfg">
+            <summary>Surfer executable location</summary>
+            <div class="cfg-row">
+              <div class="box"><input id="surfer-path" name="surfer_path" type="text" spellcheck="false" placeholder="/Applications/Surfer.app or path to surfer" aria-label="Surfer executable location"></div>
+              <button type="button" class="btn" id="btn-surfer-save">Save</button>
+            </div>
+          </details>
+        </div>
+      </form>
+
+      <!-- Side-by-Side macOS Terminal (Left) and Clean Verification Results Table (Right) -->
+      <div class="workbench-split">
+
+        <!-- Left: macOS-Style Terminal -->
+        <div class="term-window" aria-label="Terminal">
+          <div class="term-titlebar">
+            <div class="mac-dots" aria-hidden="true">
+              <span class="mac-dot red"></span>
+              <span class="mac-dot yellow"></span>
+              <span class="mac-dot green"></span>
+            </div>
+            <span class="term-title">Terminal</span>
+            <div class="term-actions">
+              <span id="term-state">Idle</span>
+              <button type="button" class="term-clear-btn" id="btn-clear">Clear</button>
+            </div>
+          </div>
+          <div class="screen" id="term" role="log" aria-live="polite" tabindex="0"></div>
+        </div>
+
+        <!-- Right: Open Testbench Results Table -->
+        <div class="results-pane" id="verify-panel" aria-label="Testbench Results">
+          <div class="results-head">
+            <span class="results-title">Testbench Verification</span>
+            <span class="results-summary" id="verify-headline">No tests run yet</span>
+          </div>
+          <div class="table-wrap" role="region" aria-labelledby="verify-headline" tabindex="0">
+            <table class="clean-table results-table">
+              <thead>
+                <tr>
+                  <th scope="col">Test</th>
+                  <th scope="col">Result</th>
+                  <th scope="col">Status</th>
+                </tr>
+              </thead>
+              <tbody id="verify-list"></tbody>
+            </table>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="foot">
+    <span>Timing and Waveform Generator Module of X Band Navigational Radar</span>
+  </footer>
+</div>
+
+<script src="/console.js"></script>
+</body>
+</html>

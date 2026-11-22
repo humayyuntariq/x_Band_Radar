@@ -1,0 +1,13 @@
+Quantity                                    Mode 1          Mode 2
+Pulse width (ns)                                80             800
+Samples N = fs x PW                           7528           75280
+FFT bin spacing (kHz)                         5.61            5.61
+Spectral peak offset (MHz)                 +0.0022         +0.0022
+Theory first null (± MHz)                   12.500           1.250
+Measured lower null (MHz)                 -12.4998         -1.2485
+Measured upper null (MHz)                 +12.4986         +1.2474
+Theory main-lobe width (MHz)                25.000           2.500
+Simulated main-lobe width (MHz)            24.9984          2.4959
+Percentage error (%)                         0.006           0.163
+Peak sidelobe (dB)                          -13.26          -13.26
+Mode 1 / Mode 2 width ratio                 10.016  (theory 10)

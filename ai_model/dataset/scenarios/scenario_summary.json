@@ -1,0 +1,54 @@
+{
+  "label_changed_share_when_input_removed": {
+    "natural_mix": {
+      "rain_removed": 0.0475,
+      "sea_state_0": 0.0265,
+      "traffic_removed": 0.0153,
+      "all_environment_removed": 0.10426666666666666
+    },
+    "balanced_set": {
+      "rain_removed": 0.046325,
+      "sea_state_0": 0.071125,
+      "traffic_removed": 0.026775,
+      "all_environment_removed": 0.15045
+    }
+  },
+  "n_balanced": 40000,
+  "n_natural": 30000,
+  "n_infeasible": 4000,
+  "scenarios_generated_for_pool": 800000,
+  "natural_class_mix": {
+    "Mode 1": 0.8268,
+    "Mode 3": 0.1163,
+    "Mode 4": 0.0236,
+    "Mode 5": 0.0189,
+    "Mode 2": 0.0143
+  },
+  "natural_infeasible_share": 0.05591666666666667,
+  "balanced_class_counts": {
+    "Mode 1": 8000,
+    "Mode 3": 8000,
+    "Mode 4": 8000,
+    "Mode 5": 8000,
+    "Mode 2": 8000
+  },
+  "label_noise_flipped_share": {
+    "balanced": 0.03785,
+    "natural": 0.03523333333333333
+  },
+  "share_labeled_by_threshold_rule": 0.5175,
+  "source_share_natural": {
+    "real": 0.612,
+    "stress": 0.388
+  },
+  "edge_share_natural": 0.07726666666666666,
+  "sea_state_share_natural": {
+    "0": 0.055,
+    "1": 0.056,
+    "2": 0.11,
+    "3": 0.236,
+    "4": 0.329,
+    "5": 0.143,
+    "6": 0.071
+  }
+}
